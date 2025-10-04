@@ -1,13 +1,11 @@
 "use client";
 // Provider component
-import { createContext, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 import { fetchAllDayData } from "../lib/nasaApi";
 import { NeoFeedResponseEnhanced } from "../app/types";
 
 // Create the context
-const AsteroidContext = createContext<{
-  allSelectedAsteroidData: NeoFeedResponseEnhanced;
-}>({
+const AsteroidContext = createContext({
   isSidebarOpen: false,
   setIsSidebarOpen: () => {},
   selectedAsteroidData: {},
@@ -27,15 +25,21 @@ const AsteroidContext = createContext<{
   setSelectedNaoReferenceId: (id: string) => {},
 });
 
+type AsteroidProviderProps = {
+  children: ReactNode;
+};
 // Provider component
-export function AsteroidProvider({ children }) {
+export function AsteroidProvider({ children }: AsteroidProviderProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [allSelectedAsteroidData, setAllSelectedAsteroidData] =
-    useState<NeoFeedResponseEnhanced>(null);
+    useState<NeoFeedResponseEnhanced | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedNaoReferenceId, setSelectedNaoReferenceId] = useState<
+    string | undefined
+  >(undefined);
 
-  const [selectedNaoReferenceId, setSelectedNaoReferenceId] =
-    useState(undefined);
+  // Add a state for selectedAsteroidData
+  const [selectedAsteroidData, setSelectedAsteroidData] = useState({});
 
   const toggleSidebar = () => {
     setIsSidebarOpen((p) => !p);
@@ -43,11 +47,8 @@ export function AsteroidProvider({ children }) {
 
   async function fetchAsteroids() {
     const data = await fetchAllDayData(selectedDate);
-    console.log("fetchTodayAsteroids data:", data);
     setAllSelectedAsteroidData(data);
   }
-
-  console.log("isSidebarOpen:", isSidebarOpen);
 
   const value = {
     toggleSidebar,
@@ -60,6 +61,8 @@ export function AsteroidProvider({ children }) {
     fetchAsteroids,
     selectedNaoReferenceId,
     setSelectedNaoReferenceId,
+    selectedAsteroidData, // Add this property
+    setSelectedAsteroidData: () => {}, // Add a no-op function for now
   };
 
   return (
