@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SpaceCrammers",
     description: "This site allows you to track Landsat 8-9 whereabouts",
-    url: "https://nextjs.org",
+    url: "2025.space-crammers.earth",
     siteName: "SpaceCrammers",
     images: [
       {
@@ -43,7 +43,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      className="dark" // Ensure this is consistent between server and client
+      lang="en"
+    >
       <body
         className={`${geistSans.variable} ${geistMono.variable} relative antialiased min-h-screen`}
       >

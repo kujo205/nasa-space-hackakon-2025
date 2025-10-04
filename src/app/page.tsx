@@ -1,13 +1,19 @@
 import Bg from "@/components/Bg";
 import Form from "../components/Form";
 import { MapProvider } from "./maps/mapProvider";
-
+import { EarthScene } from "@/components/Earth";
+// <MapProvider>
+{
+  /*<Form />*/
+}
+{
+  /*<Bg />*/
+}
+// </MapProvider>
 export default function Home() {
   return (
-    <MapProvider>
-      <Form />
-      <Bg />
-    </MapProvider>
+    <div>
+      <EarthScene />
+    </div>
   );
 }
-
