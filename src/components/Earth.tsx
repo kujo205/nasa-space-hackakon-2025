@@ -7,6 +7,8 @@ import Nebula from "./earth-components/Nebula";
 import Starfield from "./earth-components/Starfield";
 import EarthMaterial from "./earth-components/EarthMaterial";
 import AtmosphereMesh from "./earth-components/AtmosphereMesh";
+import Asteroids from "@/components/earth-components/Asteroids";
+import { items } from "@/components/exampleApiReturn";
 
 const sunDirection = new THREE.Vector3(-2, 0.5, 1.5);
 
@@ -31,12 +33,14 @@ function Earth() {
 export function EarthScene() {
   const { x, y, z } = sunDirection;
   return (
-    <div style={{ height: "600px", width: "100%" }}>
+    <div style={{ height: "100vh", width: "100%" }}>
       <Canvas
         camera={{ position: [0, 0.1, 5] }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <Earth />
+
+        <Asteroids asteroidsData={items} />
         <hemisphereLight args={[0xffffff, 0x000000, 3.0]} />
         <directionalLight position={[x, y, z]} />
         <Nebula />
