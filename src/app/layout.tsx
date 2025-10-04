@@ -43,10 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      className="dark" // Ensure this is consistent between server and client
-      lang="en"
-    >
+    <html className="dark" lang="en" style={{ colorScheme: "dark" }}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} relative antialiased min-h-screen`}
       >

@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Line } from "@react-three/drei";
+import { Line, Cone } from "@react-three/drei";
 
 /**
  * Parse NASA SBDB orbital elements and create Keplerian orbit
@@ -173,15 +173,18 @@ function getAsteroidColor(elements) {
   }
 }
 
-export default function Asteroids({ asteroidsData = [], timeScale = 1 }) {
-  const meshRef = useRef();
+export default function Asteroids({
+  asteroidsData = [],
+  timeScale = 2,
+  onAsteroidClick,
+}) {
   const markerMeshRef = useRef();
   const dummy = useMemo(() => new THREE.Object3D(), []);
+  const [hoveredAsteroid, setHoveredAsteroid] = useState(null);
 
   // Parse all asteroid data
   const asteroids = useMemo(() => {
     if (!asteroidsData || asteroidsData.length === 0) {
-      // Fallback to example data if none provided
       return [
         {
           name: "Example Asteroid",
@@ -194,55 +197,37 @@ export default function Asteroids({ asteroidsData = [], timeScale = 1 }) {
           n: (0.5 * Math.PI) / 180,
           period: 670,
           color: new THREE.Color(0xffeb3b),
+          orbitPath: generateOrbitPath({
+            a: 1.5,
+            e: 0.2,
+            i: 0.2,
+            om: 0.5,
+            w: 1.0,
+          }),
+          markedAnomaly: 0,
         },
       ];
     }
-
     return asteroidsData.map((data) => {
       const elements = parseOrbitalElements(data);
       return {
         ...elements,
         color: getAsteroidColor(elements),
         orbitPath: generateOrbitPath(elements),
-        // Mark perihelion (closest approach)
-        markedAnomaly: 0, // Mean anomaly at perihelion is 0
+        markedAnomaly: 0,
       };
     });
   }, [asteroidsData]);
 
-  // Animate asteroids with correct Keplerian motion
+  // Track current time for asteroid positions
+  const [currentTime, setCurrentTime] = useState(0);
+
+  // Animate markers and update time
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
+    setCurrentTime(time);
 
     asteroids.forEach((asteroid, i) => {
-      // Calculate elapsed time in days (sped up for visualization)
-      const elapsedDays = time * timeScale;
-
-      // Calculate current mean anomaly
-      // M = M0 + n*t (where n is mean motion in radians/day)
-      const currentMeanAnomaly = asteroid.ma + asteroid.n * elapsedDays;
-
-      // Get position (this accounts for varying speed via Kepler's equation)
-      const { position, radius, trueAnomaly } = calculateOrbitalPosition(
-        asteroid,
-        currentMeanAnomaly,
-      );
-
-      // Update asteroid position
-      dummy.position.copy(position);
-
-      // Rotate asteroid (spin rate could also be based on real data)
-      dummy.rotation.x += 0.01;
-      dummy.rotation.y += 0.02;
-
-      // Optional: scale asteroid based on distance for visibility
-      const scale = 1 + (radius / asteroid.a) * 0.2;
-      dummy.scale.set(scale, scale, scale);
-
-      dummy.updateMatrix();
-      meshRef.current.setMatrixAt(i, dummy.matrix);
-
-      // Update marker position (at perihelion - marked point)
       const markerData = calculateOrbitalPosition(
         asteroid,
         asteroid.markedAnomaly,
@@ -253,51 +238,118 @@ export default function Asteroids({ asteroidsData = [], timeScale = 1 }) {
       dummy.updateMatrix();
       markerMeshRef.current.setMatrixAt(i, dummy.matrix);
     });
-
-    meshRef.current.instanceMatrix.needsUpdate = true;
     markerMeshRef.current.instanceMatrix.needsUpdate = true;
   });
 
+  const handleAsteroidClick = (index) => {
+    if (onAsteroidClick) {
+      onAsteroidClick(asteroids[index], index);
+    }
+  };
+
   return (
     <>
-      {/* Draw orbital paths */}
+      {/* Orbital paths */}
       {asteroids.map((asteroid, i) => (
         <Line
           key={`orbit-${i}`}
           points={asteroid.orbitPath}
-          color={asteroid.color}
-          lineWidth={1.5}
+          color={hoveredAsteroid === i ? "yellow" : asteroid.color}
+          lineWidth={hoveredAsteroid === i ? 2.5 : 1.5}
           transparent
-          opacity={0.6}
+          opacity={hoveredAsteroid === i ? 0.9 : 0.6}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            setHoveredAsteroid(i);
+            document.body.style.cursor = "pointer";
+          }}
+          onPointerOut={() => {
+            setHoveredAsteroid(null);
+            document.body.style.cursor = "auto";
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAsteroidClick(i);
+          }}
         />
       ))}
+      {/* Asteroids - with individual meshes for hover detection */}
+      {asteroids.map((asteroid, i) => {
+        const elapsedDays = currentTime * timeScale;
+        const currentMeanAnomaly = asteroid.ma + asteroid.n * elapsedDays;
+        const { position, radius } = calculateOrbitalPosition(
+          asteroid,
+          currentMeanAnomaly,
+        );
+        const isHovered = hoveredAsteroid === i;
+        const scale = (1 + (radius / asteroid.a) * 0.2) * (isHovered ? 1.3 : 1);
 
-      {/* Render asteroids */}
-      <instancedMesh ref={meshRef} args={[null, null, asteroids.length]}>
-        <sphereGeometry args={[0.08, 16, 16]} />
-        <meshStandardMaterial />
-      </instancedMesh>
-
-      {/* Render markers at specific orbital points (perihelion) */}
+        return (
+          <mesh
+            key={`asteroid-${i}`}
+            position={position}
+            scale={[scale, scale, scale]}
+            rotation={[currentTime * 0.01, currentTime * 0.02, 0]}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              setHoveredAsteroid(i);
+              document.body.style.cursor = "pointer";
+            }}
+            onPointerOut={() => {
+              setHoveredAsteroid(null);
+              document.body.style.cursor = "auto";
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAsteroidClick(i);
+            }}
+          >
+            <sphereGeometry args={[0.08, 16, 16]} />
+            <meshStandardMaterial
+              color={isHovered ? "yellow" : "grey"}
+              emissive={isHovered ? "yellow" : "black"}
+              emissiveIntensity={isHovered ? 0.5 : 0}
+            />
+          </mesh>
+        );
+      })}
+      {/* Markers */}
       <instancedMesh ref={markerMeshRef} args={[null, null, asteroids.length]}>
         <sphereGeometry args={[0.08, 16, 16]} />
         <meshBasicMaterial color={0xffffff} transparent opacity={0.8} />
       </instancedMesh>
-
-      {/* Add rings around markers */}
+      {/* Rings */}
       {asteroids.map((asteroid, i) => {
         const markerData = calculateOrbitalPosition(
           asteroid,
           asteroid.markedAnomaly,
         );
+        const isHovered = hoveredAsteroid === i;
         return (
-          <mesh key={`marker-ring-${i}`} position={markerData.position}>
+          <mesh
+            key={`marker-ring-${i}`}
+            position={markerData.position}
+            scale={[1, 1, 1]}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              setHoveredAsteroid(i);
+              document.body.style.cursor = "pointer";
+            }}
+            onPointerOut={() => {
+              setHoveredAsteroid(null);
+              document.body.style.cursor = "auto";
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAsteroidClick(i);
+            }}
+          >
             <ringGeometry args={[0.15, 0.2, 32]} />
             <meshBasicMaterial
-              color={asteroid.color}
+              color={isHovered ? "cyan" : asteroid.color}
               side={THREE.DoubleSide}
               transparent
-              opacity={0.6}
+              opacity={isHovered ? 0.9 : 0.6}
             />
           </mesh>
         );

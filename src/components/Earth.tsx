@@ -40,7 +40,12 @@ export function EarthScene() {
       >
         <Earth />
 
-        <Asteroids asteroidsData={items} />
+        <Asteroids
+          onAsteroidClick={() => {
+            alert("click occured");
+          }}
+          asteroidsData={items}
+        />
         <hemisphereLight args={[0xffffff, 0x000000, 3.0]} />
         <directionalLight position={[x, y, z]} />
         <Nebula />
