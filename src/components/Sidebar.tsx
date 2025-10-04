@@ -71,13 +71,6 @@ function CollapsibleSection({
 }
 
 export function Sidebar({
-  asteroidData = {
-    diameter: 250,
-    velocity: 18.5,
-    closestApproach: "2025-12-15, 14:30 UTC",
-    missDistance: 0.002,
-    hazardous: true,
-  },
   impactLinks = {
     usgs: "https://www.usgs.gov/products/data-and-tools",
     impactEarth: "https://impact.ese.ic.ac.uk/ImpactEarth/cgi-bin/impact.cgi",
@@ -106,6 +99,22 @@ export function Sidebar({
     allSelectedAsteroidData?.near_earth_objects,
   )[0][1].find((obj) => obj.neo_reference_id === selectedNaoReferenceId);
 
+  const asteroidData = {
+    diameter: (
+      (neoObject?.estimated_diameter?.meters?.estimated_diameter_min +
+        neoObject?.estimated_diameter?.meters?.estimated_diameter_max) /
+      2
+    ).toFixed(2),
+    velocity: Number(
+      neoObject?.close_approach_data[0].relative_velocity.kilometers_per_second,
+    ).toFixed(2),
+    closestApproach: neoObject?.close_approach_data[0].close_approach_date_full,
+    missDistance: Number(
+      neoObject?.close_approach_data[0]?.miss_distance.kilometers,
+    ).toFixed(2),
+    hazardous: neoObject?.is_potentially_hazardous_asteroid,
+  };
+
   return (
     <div className="absolute left-3 top-10 w-[464px] z-10 max-h-[calc(100vh-6rem)]">
       <div className="flex justify-end -translate-y-6">
@@ -132,7 +141,7 @@ export function Sidebar({
               </p>
               <p>
                 <span className="font-medium">Miss Distance:</span>{" "}
-                {asteroidData.missDistance} AU
+                {asteroidData.missDistance} KM
               </p>
               <p className="flex items-center gap-2">
                 <span className="font-medium">Hazardous:</span>
