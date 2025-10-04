@@ -4,6 +4,9 @@ FROM node:20-alpine
 # Set the working directory inside the container
 WORKDIR /app
 
+# Enable pnpm pre and post scripts
+RUN pnpm config set enable-pre-post-scripts true
+
 # Install pnpm globally
 RUN npm install -g pnpm
 
