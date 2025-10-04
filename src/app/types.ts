@@ -1,4 +1,5 @@
 export interface SBDBResponse {
+  neo_reference_id: string;
   signature: {
     version: string;
     source: string;

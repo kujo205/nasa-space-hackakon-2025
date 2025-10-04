@@ -177,7 +177,7 @@ function getAsteroidColor(elements) {
 interface AsteroidProps {
   asteroidsData: SBDBResponse[];
   timeScale: number;
-  onAsteroidClick: (arg0: OrbitData) => void;
+  onAsteroidClick: (nao_reference_id: string) => void;
 }
 
 export default function Asteroids({
@@ -222,6 +222,7 @@ export default function Asteroids({
         color: getAsteroidColor(elements),
         orbitPath: generateOrbitPath(elements),
         markedAnomaly: 0,
+        nao_reference_id: data.neo_reference_id,
       };
     });
   }, [asteroidsData]);
@@ -250,7 +251,7 @@ export default function Asteroids({
 
   const handleAsteroidClick = (index: number) => {
     if (onAsteroidClick) {
-      onAsteroidClick(asteroids[index], index);
+      onAsteroidClick(asteroids[index].nao_reference_id);
     }
   };
 

@@ -20,6 +20,8 @@ export async function fetchAllDayData(data: Date) {
     queue.add(async () => {
       const res = await fetchSBDBData(item.neo_reference_id);
 
+      res.neo_reference_id = item.neo_reference_id;
+
       item.nasa_jpl_data = res;
 
       response.final_data.push(res);
