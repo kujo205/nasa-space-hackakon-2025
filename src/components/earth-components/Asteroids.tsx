@@ -2,6 +2,7 @@ import * as THREE from "three";
 import React, { useRef, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line, Cone } from "@react-three/drei";
+import { ObjectDetails, OrbitData } from "../../app/types";
 
 /**
  * Parse NASA SBDB orbital elements and create Keplerian orbit
@@ -173,11 +174,17 @@ function getAsteroidColor(elements) {
   }
 }
 
+interface AsteroidProps {
+  asteroidsData: OrbitData[];
+  timeScale: number;
+  onAsteroidClick: (arg0: OrbitData) => void;
+}
+
 export default function Asteroids({
   asteroidsData = [],
   timeScale = 2,
   onAsteroidClick,
-}) {
+}: AsteroidProps) {
   const markerMeshRef = useRef();
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const [hoveredAsteroid, setHoveredAsteroid] = useState(null);
@@ -241,7 +248,7 @@ export default function Asteroids({
     markerMeshRef.current.instanceMatrix.needsUpdate = true;
   });
 
-  const handleAsteroidClick = (index) => {
+  const handleAsteroidClick = (index: number) => {
     if (onAsteroidClick) {
       onAsteroidClick(asteroids[index], index);
     }

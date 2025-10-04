@@ -41,8 +41,8 @@ export function EarthScene() {
         <Earth />
 
         <Asteroids
-          onAsteroidClick={() => {
-            alert("click occured");
+          onAsteroidClick={(asteroid) => {
+            console.log("onAsteroidClick", asteroid);
           }}
           asteroidsData={items}
         />
