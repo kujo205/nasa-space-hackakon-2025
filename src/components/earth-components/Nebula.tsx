@@ -36,7 +36,7 @@ function getSprites({
     const pos = new THREE.Vector3(
       Math.cos(angle) * Math.random() * radius,
       Math.sin(angle) * Math.random() * radius,
-      z + Math.random()
+      z + Math.random(),
     );
     // const length = new THREE.Vector3(pos.x, pos.y, 0).length();
     // const hue = 0.0; // (0.9 - (radius - length) / radius) * 1;
@@ -52,11 +52,11 @@ function Nebula() {
   const sprites = getSprites({
     numSprites: 8,
     radius: 10,
-    z: -10.5,
+    z: -30.5,
     size: 24,
-    opacity: 0.2,
+    opacity: 0.1,
     path: "./rad-grad.png",
   });
-  return <primitive object={sprites} />
+  return <primitive object={sprites} />;
 }
 export default Nebula;

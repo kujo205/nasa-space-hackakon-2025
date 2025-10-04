@@ -7,6 +7,7 @@ import {
 import { EarthScene } from "@/components/Earth";
 import { Sidebar } from "@/components/Sidebar";
 import { useEffect } from "react";
+import { DaySelect } from "@/components/DaySelect";
 
 export default function Home() {
   return (
@@ -17,11 +18,11 @@ export default function Home() {
 }
 
 function Content() {
-  const { isSidebarOpen, fetchAsteroids } = useAsteroid();
+  const { isSidebarOpen, selectedDate, fetchAsteroids } = useAsteroid();
 
   useEffect(() => {
     fetchAsteroids();
-  }, []);
+  }, [selectedDate]);
 
   return (
     <div className="relative h-screen">
@@ -29,6 +30,8 @@ function Content() {
       <div>
         <EarthScene />
       </div>
+
+      <DaySelect />
     </div>
   );
 }

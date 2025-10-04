@@ -259,11 +259,13 @@ export default function Asteroids({
       {/* Orbital paths */}
       {asteroids.map((asteroid, i) => (
         <Line
+          depthWrite={false}
           key={`orbit-${i}`}
           points={asteroid.orbitPath}
           color={hoveredAsteroid === i ? "yellow" : asteroid.color}
           lineWidth={hoveredAsteroid === i ? 2.5 : 1.5}
           transparent
+          depthTest={true}
           opacity={hoveredAsteroid === i ? 0.9 : 0.6}
           onPointerOver={(e) => {
             e.stopPropagation();

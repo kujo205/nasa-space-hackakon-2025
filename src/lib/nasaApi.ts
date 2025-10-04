@@ -5,7 +5,7 @@ import {
 } from "../app/types";
 import PQueue from "p-queue";
 
-const NASA_API_KEY = "4uGQPcvGGxEKgNtFQR0TUJjD8PTcoHN6feIqgC2W";
+const NASA_API_KEY = process.env.NEXT_PUBLIC_NASA_API_KEY;
 
 export async function fetchAllDayData(data: Date) {
   const dayData = await fetchDayData(data);

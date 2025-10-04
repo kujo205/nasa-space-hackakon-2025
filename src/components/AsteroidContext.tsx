@@ -9,14 +9,23 @@ const AsteroidContext = createContext({
   isSidebarOpen: false,
   setIsSidebarOpen: () => {},
   selectedAsteroidData: {},
-  setSelectedAsteroidData: () => {},
+
+  setAllSelectedAsteroidData: () => {},
+  allSelectedAsteroidData: {},
+
+  // fetches asteroids according to the data
   fetchAsteroids: () => {},
+
+  // selected Date
+  selectedDate: Date,
+
+  setSelectedDate: (date: Date) => {},
 });
 
 // Provider component
 export function AsteroidProvider({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedAsteroidData, setSelectedAsteroidData] =
+  const [allSelectedAsteroidData, setAllSelectedAsteroidData] =
     useState<NeoFeedResponseEnhanced>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -27,7 +36,7 @@ export function AsteroidProvider({ children }) {
   async function fetchAsteroids() {
     const data = await fetchAllDayData(selectedDate);
     console.log("fetchTodayAsteroids data:", data);
-    setSelectedAsteroidData(data);
+    setAllSelectedAsteroidData(data);
   }
 
   console.log("isSidebarOpen:", isSidebarOpen);
@@ -38,8 +47,8 @@ export function AsteroidProvider({ children }) {
     setSelectedDate,
     isSidebarOpen,
     setIsSidebarOpen,
-    selectedAsteroidData,
-    setSelectedAsteroidData,
+    allSelectedAsteroidData,
+    setAllSelectedAsteroidData,
     fetchAsteroids,
   };
 

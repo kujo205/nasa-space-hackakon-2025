@@ -33,9 +33,7 @@ function Earth() {
 }
 
 export function EarthScene() {
-  const { setIsSidebarOpen, selectedAsteroidData } = useAsteroid();
-
-  console.log("selectedAsteroidData:", selectedAsteroidData);
+  const { setIsSidebarOpen, allSelectedAsteroidData } = useAsteroid();
 
   const { x, y, z } = sunDirection;
   return (
@@ -52,7 +50,7 @@ export function EarthScene() {
             setIsSidebarOpen(true);
           }}
           asteroidsData={
-            selectedAsteroidData ? selectedAsteroidData.final_data : []
+            allSelectedAsteroidData ? allSelectedAsteroidData.final_data : []
           }
         />
         <hemisphereLight args={[0xffffff, 0x000000, 3.0]} />
