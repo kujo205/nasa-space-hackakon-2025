@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAsteroid } from "@/components/AsteroidContext";
+import AsteroidImpactCalculator from "@/components/AsteroidImpactCalculator";
 
 interface MitigationStrategy {
   name: string;
@@ -98,10 +99,15 @@ export function Sidebar({
   recommendedStrategy = "Kinetic impactor with 94% success probability. Mission cost: $2.5B USD",
   author = "Mariia Kryvokhata",
 }: SidebarProps) {
-  const { setIsSidebarOpen } = useAsteroid();
+  const { setIsSidebarOpen, selectedNaoReferenceId, allSelectedAsteroidData } =
+    useAsteroid();
+
+  const neoObject = Object.entries(
+    allSelectedAsteroidData?.near_earth_objects,
+  )[0][1].find((obj) => obj.neo_reference_id === selectedNaoReferenceId);
 
   return (
-    <div className="absolute left-3 top-10 w-96 z-10 max-h-[calc(100vh-6rem)]">
+    <div className="absolute left-3 top-10 w-[464px] z-10 max-h-[calc(100vh-6rem)]">
       <div className="flex justify-end -translate-y-6">
         <Button onClick={() => setIsSidebarOpen(false)} variant="ghost">
           <X></X>
@@ -142,70 +148,7 @@ export function Sidebar({
         </CollapsibleSection>
         {/* Impact Section */}
         <CollapsibleSection title="Impact" icon={<Globe className="w-4 h-4" />}>
-          <div className="space-y-3 text-sm">
-            <div>
-              <p className="font-medium mb-1">
-                Impact zone (show separately on map above)
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Real-life impact based on USGC
-              </p>
-              <a
-                href={impactLinks.usgs}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-primary hover:underline flex items-center gap-1 mt-1"
-              >
-                {impactLinks.usgs?.replace("https://", "")}
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-
-            <div className="pt-2 border-t">
-              <p className="text-xs text-muted-foreground mb-1">
-                Real-life data based on:
-              </p>
-              <div className="space-y-1">
-                <a
-                  href={impactLinks.impactEarth}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-primary hover:underline flex items-center gap-1"
-                >
-                  {impactLinks.impactEarth?.replace("https://", "")}
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground pt-2">{author}</p>
-          </div>
-        </CollapsibleSection>
-        {/* Parameter Panel Section */}
-        <CollapsibleSection title="Parameter Panel">
-          <div className="space-y-2 text-sm">
-            <p className="text-xs text-muted-foreground">
-              For users to input data into
-            </p>
-            <a
-              href={impactLinks.impactEarth}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-primary hover:underline flex items-center gap-1"
-            >
-              {impactLinks.impactEarth?.replace("https://", "")}
-              <ExternalLink className="w-3 h-3" />
-            </a>
-            <p className="text-xs text-muted-foreground">{author}</p>
-          </div>
-        </CollapsibleSection>
-        {/* Impactor Data Section */}
-        <CollapsibleSection title='Include "impactor-2025" data'>
-          <div className="text-sm">
-            <p className="text-xs text-muted-foreground">
-              (!!!!!!!!!!!!!!!!!!!!!!!!!!)
-            </p>
-            <p className="text-xs text-muted-foreground pt-2">{author}</p>
-          </div>
+          <AsteroidImpactCalculator data={neoObject} />
         </CollapsibleSection>
         {/* Mitigation Section */}
         <CollapsibleSection

@@ -5,7 +5,9 @@ import { fetchAllDayData } from "../lib/nasaApi";
 import { NeoFeedResponseEnhanced } from "../app/types";
 
 // Create the context
-const AsteroidContext = createContext({
+const AsteroidContext = createContext<{
+  allSelectedAsteroidData: NeoFeedResponseEnhanced;
+}>({
   isSidebarOpen: false,
   setIsSidebarOpen: () => {},
   selectedAsteroidData: {},
@@ -18,8 +20,11 @@ const AsteroidContext = createContext({
 
   // selected Date
   selectedDate: Date,
-
   setSelectedDate: (date: Date) => {},
+
+  // selected neo_reference_id
+  selectedNaoReferenceId: undefined,
+  setSelectedNaoReferenceId: (id: string) => {},
 });
 
 // Provider component
@@ -28,6 +33,9 @@ export function AsteroidProvider({ children }) {
   const [allSelectedAsteroidData, setAllSelectedAsteroidData] =
     useState<NeoFeedResponseEnhanced>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const [selectedNaoReferenceId, setSelectedNaoReferenceId] =
+    useState(undefined);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((p) => !p);
@@ -50,6 +58,8 @@ export function AsteroidProvider({ children }) {
     allSelectedAsteroidData,
     setAllSelectedAsteroidData,
     fetchAsteroids,
+    selectedNaoReferenceId,
+    setSelectedNaoReferenceId,
   };
 
   return (

@@ -10,7 +10,6 @@ import AtmosphereMesh from "./earth-components/AtmosphereMesh";
 import Asteroids from "@/components/earth-components/Asteroids";
 import { items } from "@/components/exampleApiReturn";
 import { useAsteroid } from "@/components/AsteroidContext";
-import { getNasaJplDataArray } from "../lib/nasaApi";
 
 const sunDirection = new THREE.Vector3(-2, 0.5, 1.5);
 
@@ -23,7 +22,7 @@ function Earth() {
   const axialTilt = (23.4 * Math.PI) / 180;
   return (
     <group rotation-z={axialTilt}>
-      <mesh ref={ref}>
+      <mesh scale={[0.8, 0.8, 0.8]} ref={ref}>
         <icosahedronGeometry args={[2, 64]} />
         <EarthMaterial sunDirection={sunDirection} />
         <AtmosphereMesh />
@@ -33,7 +32,11 @@ function Earth() {
 }
 
 export function EarthScene() {
-  const { setIsSidebarOpen, allSelectedAsteroidData } = useAsteroid();
+  const {
+    setIsSidebarOpen,
+    allSelectedAsteroidData,
+    setSelectedNaoReferenceId,
+  } = useAsteroid();
 
   const { x, y, z } = sunDirection;
   return (
@@ -46,9 +49,10 @@ export function EarthScene() {
 
         <Asteroids
           onAsteroidClick={(asteroid) => {
-            console.log("onAsteroidClick", asteroid);
+            setSelectedNaoReferenceId(asteroid);
             setIsSidebarOpen(true);
           }}
+          timeScale={2}
           asteroidsData={
             allSelectedAsteroidData ? allSelectedAsteroidData.final_data : []
           }
