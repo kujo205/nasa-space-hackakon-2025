@@ -10,6 +10,7 @@ import AtmosphereMesh from "./earth-components/AtmosphereMesh";
 import Asteroids from "@/components/earth-components/Asteroids";
 import { items } from "@/components/exampleApiReturn";
 import { useAsteroid } from "@/components/AsteroidContext";
+import { getNasaJplDataArray } from "../lib/nasaApi";
 
 const sunDirection = new THREE.Vector3(-2, 0.5, 1.5);
 
@@ -32,7 +33,9 @@ function Earth() {
 }
 
 export function EarthScene() {
-  const { setIsSidebarOpen } = useAsteroid();
+  const { setIsSidebarOpen, selectedAsteroidData } = useAsteroid();
+
+  console.log("selectedAsteroidData:", selectedAsteroidData);
 
   const { x, y, z } = sunDirection;
   return (
@@ -48,7 +51,9 @@ export function EarthScene() {
             console.log("onAsteroidClick", asteroid);
             setIsSidebarOpen(true);
           }}
-          asteroidsData={items}
+          asteroidsData={
+            selectedAsteroidData ? selectedAsteroidData.final_data : []
+          }
         />
         <hemisphereLight args={[0xffffff, 0x000000, 3.0]} />
         <directionalLight position={[x, y, z]} />

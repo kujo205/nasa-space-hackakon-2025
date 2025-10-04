@@ -6,6 +6,7 @@ import {
 } from "../../src/components/AsteroidContext";
 import { EarthScene } from "@/components/Earth";
 import { Sidebar } from "@/components/Sidebar";
+import { useEffect } from "react";
 
 export default function Home() {
   return (
@@ -16,7 +17,11 @@ export default function Home() {
 }
 
 function Content() {
-  const { isSidebarOpen } = useAsteroid();
+  const { isSidebarOpen, fetchAsteroids } = useAsteroid();
+
+  useEffect(() => {
+    fetchAsteroids();
+  }, []);
 
   return (
     <div className="relative h-screen">

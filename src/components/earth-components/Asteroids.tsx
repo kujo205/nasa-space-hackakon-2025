@@ -2,7 +2,7 @@ import * as THREE from "three";
 import React, { useRef, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line, Cone } from "@react-three/drei";
-import { ObjectDetails, OrbitData } from "../../app/types";
+import { SBDBResponse } from "../../app/types";
 
 /**
  * Parse NASA SBDB orbital elements and create Keplerian orbit
@@ -175,7 +175,7 @@ function getAsteroidColor(elements) {
 }
 
 interface AsteroidProps {
-  asteroidsData: OrbitData[];
+  asteroidsData: SBDBResponse[];
   timeScale: number;
   onAsteroidClick: (arg0: OrbitData) => void;
 }
