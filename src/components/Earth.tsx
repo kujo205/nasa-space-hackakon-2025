@@ -9,6 +9,7 @@ import EarthMaterial from "./earth-components/EarthMaterial";
 import AtmosphereMesh from "./earth-components/AtmosphereMesh";
 import Asteroids from "@/components/earth-components/Asteroids";
 import { items } from "@/components/exampleApiReturn";
+import { useAsteroid } from "@/components/AsteroidContext";
 
 const sunDirection = new THREE.Vector3(-2, 0.5, 1.5);
 
@@ -31,6 +32,8 @@ function Earth() {
 }
 
 export function EarthScene() {
+  const { setIsSidebarOpen } = useAsteroid();
+
   const { x, y, z } = sunDirection;
   return (
     <div style={{ height: "100vh", width: "100%" }}>
@@ -43,6 +46,7 @@ export function EarthScene() {
         <Asteroids
           onAsteroidClick={(asteroid) => {
             console.log("onAsteroidClick", asteroid);
+            setIsSidebarOpen(true);
           }}
           asteroidsData={items}
         />

@@ -1,19 +1,29 @@
-import Bg from "@/components/Bg";
-import Form from "../components/Form";
-import { MapProvider } from "./maps/mapProvider";
+"use client";
+
+import {
+  AsteroidProvider,
+  useAsteroid,
+} from "../../src/components/AsteroidContext";
 import { EarthScene } from "@/components/Earth";
-// <MapProvider>
-{
-  /*<Form />*/
-}
-{
-  /*<Bg />*/
-}
-// </MapProvider>
+import { Sidebar } from "@/components/Sidebar";
+
 export default function Home() {
   return (
-    <div>
-      <EarthScene />
+    <AsteroidProvider>
+      <Content />
+    </AsteroidProvider>
+  );
+}
+
+function Content() {
+  const { isSidebarOpen } = useAsteroid();
+
+  return (
+    <div className="relative h-screen">
+      {isSidebarOpen && <Sidebar />}
+      <div>
+        <EarthScene />
+      </div>
     </div>
   );
 }
