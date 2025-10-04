@@ -143,7 +143,7 @@ export function Sidebar({
                 <span className="font-medium">Miss Distance:</span>{" "}
                 {asteroidData.missDistance} KM
               </p>
-              <p className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <span className="font-medium">Hazardous:</span>
                 <Badge
                   variant={asteroidData.hazardous ? "destructive" : "secondary"}
@@ -151,7 +151,7 @@ export function Sidebar({
                 >
                   {asteroidData.hazardous ? "Yes" : "No"}
                 </Badge>
-              </p>
+              </div>
             </div>
           </div>
         </CollapsibleSection>
