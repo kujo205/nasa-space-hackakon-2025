@@ -55,7 +55,7 @@ function CollapsibleSection({
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-4 hover:bg-accent transition-colors"
       >
-        <div className="flex items-center gap-2 font-medium">
+        <div className="flex items-center gap-2 text-xl font-bold">
           {icon}
           <span>{title}</span>
         </div>
@@ -113,6 +113,7 @@ export function Sidebar({
       neoObject?.close_approach_data[0]?.miss_distance.kilometers,
     ).toFixed(2),
     hazardous: neoObject?.is_potentially_hazardous_asteroid,
+    name: neoObject.name,
   };
 
   return (
@@ -127,6 +128,10 @@ export function Sidebar({
         <CollapsibleSection title="Asteroid Data">
           <div className="space-y-2 text-sm">
             <div className="space-y-1">
+              <p>
+                <span className="font-bold">Asteroid Name:</span>{" "}
+                {asteroidData.name}
+              </p>
               <p>
                 <span className="font-medium">Diameter:</span>{" "}
                 {asteroidData.diameter} m
