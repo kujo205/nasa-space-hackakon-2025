@@ -4,7 +4,7 @@ import React from "react";
 
 function getPoints({ numStars = 500 } = {}) {
   function randomSpherePoint() {
-    const radius = Math.random() * 25 + 65;
+    const radius = Math.random() * 25 + 105;
     const u = Math.random();
     const v = Math.random();
     const theta = 2 * Math.PI * u;

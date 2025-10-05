@@ -92,7 +92,7 @@ function solveKeplerEquation(M, e) {
  * @param {number} meanAnomaly - Current mean anomaly
  * @returns {Object} {position: THREE.Vector3, trueAnomaly: number, radius: number}
  */
-function calculateOrbitalPosition(elements, meanAnomaly) {
+function calculateOrbitalPosition(elements, meanAnomaly, orbitScale) {
   const { a, e, i, om, w } = elements;
 
   // Solve Kepler's equation for eccentric anomaly
@@ -130,11 +130,8 @@ function calculateOrbitalPosition(elements, meanAnomaly) {
     (-sinW * sinOm + cosW * cosOm * cosI) * yOrb;
   const z = sinW * sinI * xOrb + cosW * sinI * yOrb;
 
-  // Scale to visualization units (1 AU = 5 units in our scene)
-  const scale = 5;
-
   return {
-    position: new THREE.Vector3(x * scale, z * scale, y * scale),
+    position: new THREE.Vector3(x * orbitScale, z * orbitScale, y * orbitScale),
     trueAnomaly: nu,
     radius: r,
     eccentricAnomaly: E,
@@ -147,11 +144,15 @@ function calculateOrbitalPosition(elements, meanAnomaly) {
  * @param {number} numPoints - Number of points to generate
  * @returns {Array<THREE.Vector3>} Array of position vectors
  */
-function generateOrbitPath(elements, numPoints = 200) {
+function generateOrbitPath(elements, numPoints = 200, orbitScale: number) {
   const points = [];
   for (let i = 0; i <= numPoints; i++) {
     const meanAnomaly = (i / numPoints) * Math.PI * 2;
-    const { position } = calculateOrbitalPosition(elements, meanAnomaly);
+    const { position } = calculateOrbitalPosition(
+      elements,
+      meanAnomaly,
+      orbitScale,
+    );
     points.push(position);
   }
   return points;
@@ -179,12 +180,14 @@ interface AsteroidProps {
   asteroidsData: SBDBResponse[];
   timeScale: number;
   onAsteroidClick: (nao_reference_id: string) => void;
+  orbitScale: number;
 }
 
 export default function Asteroids({
   asteroidsData = [],
   timeScale = 2,
   onAsteroidClick,
+  orbitScale = 10,
 }: AsteroidProps) {
   const { selectedNaoReferenceId, isSidebarOpen } = useAsteroid();
   const markerMeshRef = useRef();
@@ -222,12 +225,12 @@ export default function Asteroids({
       return {
         ...elements,
         color: getAsteroidColor(elements),
-        orbitPath: generateOrbitPath(elements),
+        orbitPath: generateOrbitPath(elements, 200, orbitScale), // Pass orbitScale here
         markedAnomaly: 0,
         neo_reference_id: data.neo_reference_id,
       };
     });
-  }, [asteroidsData]);
+  }, [asteroidsData, orbitScale]);
 
   // Track current time for asteroid positions
   const [currentTime, setCurrentTime] = useState(0);
@@ -241,6 +244,7 @@ export default function Asteroids({
       const markerData = calculateOrbitalPosition(
         asteroid,
         asteroid.markedAnomaly,
+        orbitScale,
       );
       dummy.position.copy(markerData.position);
       dummy.scale.set(1.5, 1.5, 1.5);
@@ -299,6 +303,7 @@ export default function Asteroids({
         const { position, radius } = calculateOrbitalPosition(
           asteroid,
           currentMeanAnomaly,
+          orbitScale,
         );
         const isHovered = hoveredAsteroid === i;
         const scale = (1 + (radius / asteroid.a) * 0.2) * (isHovered ? 1.3 : 1);
