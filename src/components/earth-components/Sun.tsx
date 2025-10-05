@@ -29,7 +29,7 @@ export default function Sun() {
         <meshBasicMaterial
           color="#FF5F1F"
           transparent={true}
-          opacity={0.4}
+          opacity={0.2}
           side={THREE.BackSide}
         />
       </mesh>
@@ -39,8 +39,8 @@ export default function Sun() {
         <Bloom
           kernelSize={KernelSize.LARGE}
           luminanceThreshold={0} // match reference
-          luminanceSmoothing={0.4}
-          intensity={2} // match reference
+          luminanceSmoothing={0.2}
+          intensity={1.5} // match reference
           radius={0.85} // match reference
           blendFunction={BlendFunction.SCREEN}
         />
