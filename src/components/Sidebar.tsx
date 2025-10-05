@@ -99,7 +99,7 @@ export function Sidebar() {
   };
 
   return (
-    <div className="absolute left-3 top-10 w-[464px] z-10 max-h-[calc(100vh-6rem)]">
+    <div className="absolute left-3 top-10 w-[464px] max-w-[90vw] z-10 max-h-[calc(100vh-6rem)]">
       <div className="flex justify-end -translate-y-6">
         <Button onClick={() => setIsSidebarOpen(false)} variant="ghost">
           <X></X>
@@ -109,7 +109,7 @@ export function Sidebar() {
       <div className="bg-background max-h-[80vh] overflow-y-auto border rounded-lg shadow-lg">
         <CollapsibleSection
           icon={<Database className="w-4 h-4" />}
-          title="Asteroid Data"
+          title={`${asteroidData.name} asteroid data`}
         >
           <div className="space-y-2 text-sm">
             <div className="space-y-1">
