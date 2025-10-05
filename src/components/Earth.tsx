@@ -10,6 +10,7 @@ import AtmosphereMesh from "./earth-components/AtmosphereMesh";
 import Asteroids from "@/components/earth-components/Asteroids";
 import { items } from "@/components/exampleApiReturn";
 import { useAsteroid } from "@/components/AsteroidContext";
+import { BasicLoadingOverlay } from "@/components/earth-components/Spinner";
 
 const sunDirection = new THREE.Vector3(-2, 0.5, 1.5);
 
@@ -36,11 +37,14 @@ export function EarthScene() {
     setIsSidebarOpen,
     allSelectedAsteroidData,
     setSelectedNaoReferenceId,
+    isDataLoading,
   } = useAsteroid();
 
   const { x, y, z } = sunDirection;
   return (
     <div style={{ height: "100vh", width: "100%" }}>
+      <BasicLoadingOverlay isLoading={isDataLoading} />
+
       <Canvas
         camera={{ position: [0, 0.1, 5] }}
         gl={{ toneMapping: THREE.NoToneMapping }}

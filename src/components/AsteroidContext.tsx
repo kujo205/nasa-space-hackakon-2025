@@ -23,6 +23,8 @@ const AsteroidContext = createContext({
   // selected neo_reference_id
   selectedNaoReferenceId: undefined,
   setSelectedNaoReferenceId: (id: string) => {},
+
+  isDataLoading: false,
 });
 
 type AsteroidProviderProps = {
@@ -38,6 +40,8 @@ export function AsteroidProvider({ children }: AsteroidProviderProps) {
     string | undefined
   >(undefined);
 
+  const [isDataLoading, setIsDataLoading] = useState(false);
+
   // Add a state for selectedAsteroidData
   const [selectedAsteroidData, setSelectedAsteroidData] = useState({});
 
@@ -46,8 +50,15 @@ export function AsteroidProvider({ children }: AsteroidProviderProps) {
   };
 
   async function fetchAsteroids() {
-    const data = await fetchAllDayData(selectedDate);
-    setAllSelectedAsteroidData(data);
+    setIsDataLoading(true);
+    try {
+      const data = await fetchAllDayData(selectedDate);
+      setAllSelectedAsteroidData(data);
+    } catch (e) {
+      setIsDataLoading(false);
+      console.error("Error fetching asteroid data:", e);
+    }
+    setIsDataLoading(false);
   }
 
   const value = {
@@ -63,6 +74,7 @@ export function AsteroidProvider({ children }: AsteroidProviderProps) {
     setSelectedNaoReferenceId,
     selectedAsteroidData, // Add this property
     setSelectedAsteroidData: () => {}, // Add a no-op function for now
+    isDataLoading,
   };
 
   return (
