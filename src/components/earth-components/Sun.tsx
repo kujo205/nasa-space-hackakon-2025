@@ -19,7 +19,7 @@ export default function Sun() {
       <mesh ref={sunRef} position={[0, 0, 0]}>
         <icosahedronGeometry args={[1, 15]} />
         <meshBasicMaterial color="#FDB813" />
-        <pointLight intensity={10} distance={50} decay={2} />
+        <pointLight intensity={20} distance={100} decay={14} />
       </mesh>
 
       {/* Post-processing effects */}
