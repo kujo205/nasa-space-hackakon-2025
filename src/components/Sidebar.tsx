@@ -72,28 +72,7 @@ function CollapsibleSection({
   );
 }
 
-export function Sidebar({
-  impactLinks = {
-    usgs: "https://www.usgs.gov/products/data-and-tools",
-    impactEarth: "https://impact.ese.ic.ac.uk/ImpactEarth/cgi-bin/impact.cgi",
-  },
-  mitigationStrategies = [
-    {
-      name: "Kinetic Impactor Mission",
-      description: "Launch window: 2028-2030",
-    },
-    {
-      name: "Gravity Tractor",
-      description: "Required lead time: 10+ years",
-    },
-    {
-      name: "Nuclear Deflection",
-      description: "Last resort option",
-    },
-  ],
-  recommendedStrategy = "Kinetic impactor with 94% success probability. Mission cost: $2.5B USD",
-  author = "Mariia Kryvokhata",
-}: SidebarProps) {
+export function Sidebar() {
   const { setIsSidebarOpen, selectedNaoReferenceId, allSelectedAsteroidData } =
     useAsteroid();
 

@@ -17,13 +17,18 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const description = `
+SkyGuard is an interactive platform that brings space science to life by visualizing real asteroid impact scenarios using NASA data. Users can explore how asteroids travel through space, simulate what would happen if it one struck Earth, and see the potential effects — crater formation, seismic effects, and atmospheric changes.
+The tool lets users adjust variables such as asteroid density, impact angle, and distance from impact center, then instantly see how those changes alter outcomes. By combining scientific accuracy with intuitive design, dynamic visuals, and explanatory tooltips, the platform turns complex impact modeling into an accessible experience. It empowers the public, educators, and decision-makers to better understand asteroid threats and explore possible ways to protect our planet.
+`;
+
 export const metadata: Metadata = {
   title: "SpaceCrammers",
-  description: "This site allows you to track Landsat 8-9 whereabouts",
+  description,
   openGraph: {
     title: "SpaceCrammers",
-    description: "This site allows you to track Landsat 8-9 whereabouts",
-    url: "2025.space-crammers.earth",
+    description,
+    url: "https://2025.space-crammers.earth",
     siteName: "SpaceCrammers",
     images: [
       {

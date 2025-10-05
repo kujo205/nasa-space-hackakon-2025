@@ -1,10 +1,10 @@
 "use client";
 import { type TFinalDataItem } from "../app/types";
 import * as React from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 
+// Interface definitions remain the same
 interface AsteroidEarthMapProps {
   data: TFinalDataItem;
 }
@@ -69,17 +69,18 @@ function calculateSubAsteroidPoint(
   };
 }
 
-// Fix for default marker icon
-const customIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+// Dynamically import the map component with ssr disabled
+const MapWithNoSSR = dynamic(
+  () => import("./LeafletMap").then((mod) => mod.LeafletMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-60 rounded-lg overflow-hidden shadow-lg flex items-center justify-center bg-gray-100">
+        <p>Loading map...</p>
+      </div>
+    ),
+  },
+);
 
 export function AsteroidEarthMap({ data }: AsteroidEarthMapProps) {
   const [selectedApproach, setSelectedApproach] = React.useState<number>(0);
@@ -145,63 +146,13 @@ export function AsteroidEarthMap({ data }: AsteroidEarthMapProps) {
         </div>
       )}
 
-      {/* Leaflet Map */}
-      <div className="h-60 rounded-lg overflow-hidden shadow-lg">
-        <MapContainer
-          center={[currentPoint.latitude, currentPoint.longitude]}
-          zoom={4}
-          style={{ height: "100%", width: "100%" }}
-          key={`${currentPoint.latitude}-${currentPoint.longitude}`}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+      {/* Dynamically loaded Map */}
+      <MapWithNoSSR
+        currentPoint={currentPoint}
+        data={data}
+        asteroidRadiusMeters={asteroidRadiusMeters}
+      />
 
-          <Marker
-            position={[currentPoint.latitude, currentPoint.longitude]}
-            icon={customIcon}
-          >
-            <Popup>
-              <div className="p-2">
-                <h3 className="font-bold text-lg">{data.name}</h3>
-                <p className="text-sm mt-1">
-                  <strong>Date:</strong>{" "}
-                  {new Date(currentPoint.date).toLocaleString()}
-                </p>
-                <p className="text-sm">
-                  <strong>Miss Distance:</strong>{" "}
-                  {currentPoint.missDistance.toLocaleString()} km
-                </p>
-                <p className="text-sm">
-                  <strong>Velocity:</strong> {currentPoint.velocity.toFixed(2)}{" "}
-                  km/s
-                </p>
-                <p className="text-sm">
-                  <strong>Coordinates:</strong>{" "}
-                  {currentPoint.latitude.toFixed(2)}°,{" "}
-                  {currentPoint.longitude.toFixed(2)}°
-                </p>
-                <p className="text-sm">
-                  <strong>Asteroid Size:</strong>{" "}
-                  {(asteroidRadiusMeters * 2).toFixed(0)} m diameter
-                </p>
-              </div>
-            </Popup>
-          </Marker>
-
-          <Circle
-            center={[currentPoint.latitude, currentPoint.longitude]}
-            radius={asteroidRadiusMeters}
-            pathOptions={{
-              color: "red",
-              fillColor: "red",
-              fillOpacity: 0.3,
-              weight: 2,
-            }}
-          />
-        </MapContainer>
-      </div>
       <p className="text-sm italic">
         *Projection of an asteroid at its closest approach on Earth
       </p>
