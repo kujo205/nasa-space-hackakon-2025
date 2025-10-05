@@ -4,7 +4,7 @@ import {
   AsteroidProvider,
   useAsteroid,
 } from "../../src/components/AsteroidContext";
-import { EarthScene } from "@/components/Earth";
+import { UniverseScene } from "@/components/UniverseScene";
 import { Sidebar } from "@/components/Sidebar";
 import { useEffect } from "react";
 import { DaySelect } from "@/components/DaySelect";
@@ -28,7 +28,7 @@ function Content() {
     <div className="relative h-screen">
       {isSidebarOpen && <Sidebar />}
       <div>
-        <EarthScene />
+        <UniverseScene />
       </div>
 
       <DaySelect />

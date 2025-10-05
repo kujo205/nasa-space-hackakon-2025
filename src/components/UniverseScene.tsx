@@ -5,34 +5,13 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import Nebula from "./earth-components/Nebula";
 import Starfield from "./earth-components/Starfield";
-import EarthMaterial from "./earth-components/EarthMaterial";
-import AtmosphereMesh from "./earth-components/AtmosphereMesh";
 import Asteroids from "@/components/earth-components/Asteroids";
 import { useAsteroid } from "@/components/AsteroidContext";
 import { BasicLoadingOverlay } from "@/components/earth-components/Spinner";
 import Sun from "./earth-components/Sun";
+import { Earth } from "./earth-components/Earth";
 
-const sunDirection = new THREE.Vector3(-2, 0.5, 1.5);
-
-function Earth() {
-  const ref = React.useRef();
-
-  useFrame(() => {
-    ref.current.rotation.y += 0.001;
-  });
-  const axialTilt = (23.4 * Math.PI) / 180;
-  return (
-    <group rotation-z={axialTilt}>
-      <mesh scale={[0.6, 0.6, 0.6]} ref={ref}>
-        <icosahedronGeometry args={[2, 64]} />
-        <EarthMaterial sunDirection={sunDirection} />
-        <AtmosphereMesh />
-      </mesh>
-    </group>
-  );
-}
-
-export function EarthScene() {
+export function UniverseScene() {
   const {
     setIsSidebarOpen,
     allSelectedAsteroidData,
@@ -40,7 +19,6 @@ export function EarthScene() {
     isDataLoading,
   } = useAsteroid();
 
-  const { x, y, z } = sunDirection;
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       <BasicLoadingOverlay isLoading={isDataLoading} />
@@ -50,9 +28,10 @@ export function EarthScene() {
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <Sun />
-        {/*<Earth />*/}
+        <Earth orbitScale={15} />
 
         <Asteroids
+          orbitScale={15}
           onAsteroidClick={(asteroid) => {
             setSelectedNaoReferenceId(asteroid);
             setIsSidebarOpen(true);
@@ -63,7 +42,7 @@ export function EarthScene() {
           }
         />
         <hemisphereLight args={[0xffffff, 0x000000, 3.0]} />
-        <directionalLight position={[x, y, z]} />
+        {/*<directionalLight position={[x, y, z]} />*/}
         <Nebula />
         <Starfield />
         <OrbitControls />
