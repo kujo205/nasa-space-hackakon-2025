@@ -15,25 +15,21 @@ const members = [
     role: "Designer, Product manager, Data analyst",
     linked: "https://www.linkedin.com/in/mariia-kryvokhata/",
   },
-  {
-    name: "Max Siryk",
-    photo: "/maks.png",
-    role: "CTO, full-stack",
-    linked: "https://www.linkedin.com/in/max-siryk/",
-  },
 ];
 
 const atricles = [
   {
     title: "What does our app do?",
     description:
-      'Our app helps curious space researchers track the location of Landsat 8/9 satellites. Users can input their coordinates and choose whether to get historical images of the point they chose or photos of the soonest satellite pass. After entering all the details and clicking "submit", they will receive an email with all the data about their request (including location and max cloud coverage) and the type of photo they selected.  They will also receive a pinpointed pixel if they choose an option with the closest satellite pass. Besides receiving an email of satellite pass they are going to receive a notification on "n" day before it passes.\n',
-    video: true,
+      "SkyGuard is an interactive platform that brings space science to life by visualizing real asteroid impact scenarios using NASA data. Users can explore how asteroids travel through space, simulate what would happen if it one struck Earth, and see the potential effects — crater formation, seismic effects, and atmospheric changes.\n\n" +
+      "The tool lets users adjust variables such as asteroid density, impact angle, and distance from impact center, then instantly see how those changes alter outcomes. By combining scientific accuracy with intuitive design, dynamic visuals, and explanatory tooltips, the platform turns complex impact modeling into an accessible experience. It empowers the public, educators, and decision-makers to better understand asteroid threats and explore possible ways to protect our planet.",
+    video: false,
   },
   {
     title: "About Us",
     description:
       "We are a team of ambitious Ukrainian software engineers and product\n        analysts dedicated to our careers and studying at the KPI University. We\n        view studying as a main objective of our lives and so, dedicate a hefty\n        amount of time to this very purpose. We are also very keen on the topic\n        of space, which is why this contest drew our attention. Additionally, we\n        believe it's important to expand the boundaries of our knowledge, so we\n        decided to utilize our skills to make the lives of Space explorers\n        easier.",
+    video: false,
   },
 ];
 
