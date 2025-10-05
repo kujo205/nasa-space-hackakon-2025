@@ -6,7 +6,9 @@
   <br>
 </div>
 
-You can always check the live version of the project [here](https://www.space-crammers.earth)
+You can always check the live version of the project [here](https://2025.space-crammers.earth)
+
+Link to Nasa Space Apps Challenge [here](https://www.spaceappschallenge.org/2025/find-a-team/spacecrammers1/)
 
 ## Getting Started
 ```bash
