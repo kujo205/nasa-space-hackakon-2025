@@ -314,18 +314,20 @@ export default function Asteroids({
               handleAsteroidClick(i);
             }}
           >
-            <sphereGeometry args={[0.08, 16, 16]} />
+            <icosahedronGeometry args={[0.08, 0]} />
             <meshStandardMaterial
-              color={isHovered ? "yellow" : "grey"}
-              emissive={isHovered ? "yellow" : "black"}
+              color={isHovered ? "#ffff00" : "#817a6e"}
+              emissive={isHovered ? "#ffff00" : "#000000"}
               emissiveIntensity={isHovered ? 0.5 : 0}
+              roughness={0.9}
+              metalness={0.1}
             />
           </mesh>
         );
       })}
       {/* Markers */}
       <instancedMesh ref={markerMeshRef} args={[null, null, asteroids.length]}>
-        <sphereGeometry args={[0.08, 16, 16]} />
+        <sphereGeometry args={[0.06, 16, 16]} />
         <meshBasicMaterial color={"#4da4a4"} transparent opacity={0.8} />
       </instancedMesh>
       {/* Rings */}
