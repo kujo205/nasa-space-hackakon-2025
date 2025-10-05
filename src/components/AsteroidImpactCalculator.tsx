@@ -9,6 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -444,9 +452,39 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
     return variants[severity] || "default";
   };
 
-  const DataPoint = ({ label, value, subtext, variant = "default" }) => (
-    <div className="space-y-1">
-      <p className="text-sm text-muted-foreground">{label}</p>
+  const DataPoint = ({
+    label,
+    value,
+    subtext,
+    variant = "default",
+    tooltip,
+  }: {
+    label: string;
+    value: string | number;
+    subtext?: string;
+    variant?: "default" | "primary" | "destructive" | "warning";
+    tooltip?: string;
+  }) => (
+    <div className="space-y-1 min-h-20">
+      <div className="flex items-center gap-1">
+        <p className="text-sm text-muted-foreground overflow-hidden whitespace-nowrap">
+          {label}
+        </p>
+        {tooltip && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-help">
+                  <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs text-sm">{tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
       <p
         className={`text-2xl font-bold ${
           variant === "primary"
@@ -609,31 +647,30 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
                           value={`${impactAnalysis.diameter.average.toFixed(1)} m`}
                           subtext={`Range: ${impactAnalysis.diameter.min.toFixed(1)} - ${impactAnalysis.diameter.max.toFixed(1)} m`}
                           variant="primary"
+                          tooltip="Average of the estimated diameter range from observations"
                         />
                         <DataPoint
-                          label="Mass"
-                          value={`${(((Math.PI / 6) * impactAnalysis.density * 1000 * Math.pow(impactAnalysis.diameter.average, 3)) / 1e9).toFixed(2)} M kg`}
-                          subtext={`${((Math.PI / 6) * impactAnalysis.density * 1000 * Math.pow(impactAnalysis.diameter.average, 3)).toExponential(2)} kg`}
-                          variant="primary"
-                        />
-                        <DataPoint
+                          tooltip="Velocity upon atmospheric entry"
                           label="Impact Velocity"
                           value={`${impactAnalysis.velocity.kmPerSec.toFixed(2)} km/s`}
                           subtext={`${impactAnalysis.velocity.mPerSec.toLocaleString()} m/s`}
                           variant="warning"
                         />
                         <DataPoint
+                          tooltip="Kinetic energy of the impact"
                           label="Kinetic Energy"
                           value={`${impactAnalysis.energy.megatonsTNT.toFixed(2)} Mt`}
                           subtext={`${impactAnalysis.energy.joules.toExponential(2)} Joules`}
                           variant="destructive"
                         />
                         <DataPoint
+                          tooltip="Angle between the asteroid's trajectory and Earth's surface. Lower angles create elongated craters and distribute energy differently."
                           label="Impact Angle"
                           value={`${impactAnalysis.angle}°`}
                           subtext="from horizontal"
                         />
                         <DataPoint
+                          tooltip="Assumed average density of the asteroid"
                           label="Density"
                           value={`${impactAnalysis.density} g/cm³`}
                         />
@@ -651,19 +688,23 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
                       <CardContent>
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                           <DataPoint
+                            tooltip="Classification based on size and morphology. Simple craters are bowl-shaped; complex craters have central peaks and terraced walls."
                             label="Crater Type"
                             value={impactAnalysis.crater.type}
                           />
                           <DataPoint
+                            tooltip="The rim-to-rim diameter of the final crater after collapse processes are complete"
                             label="Final Diameter"
                             value={`${(impactAnalysis.crater.finalDiameter / 1000).toFixed(2)} km`}
                             variant="primary"
                           />
                           <DataPoint
+                            tooltip="The maximum depth of the crater from rim to floor"
                             label="Crater Depth"
                             value={`${impactAnalysis.crater.depth.toFixed(0)} m`}
                           />
                           <DataPoint
+                            tooltip="Volume of target rock melted by the impact energy"
                             label="Melt Volume"
                             value={impactAnalysis.crater.meltVolume.toExponential(
                               2,
@@ -671,6 +712,7 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
                             subtext="m³"
                           />
                           <DataPoint
+                            tooltip="Average thickness of melted rock lining the crater floor"
                             label="Melt Thickness"
                             value={`${impactAnalysis.crater.meltThickness.toFixed(2)} m`}
                           />
@@ -761,22 +803,26 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
                     <CardContent>
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                         <DataPoint
+                          tooltip="The base earthquake magnitude generated at the impact site, similar to a natural earthquake on the Richter scale"
                           label="Richter Magnitude"
                           value={impactAnalysis.seismic.magnitude.toFixed(1)}
                           variant="warning"
                         />
                         <DataPoint
+                          tooltip="The earthquake magnitude felt at your specified distance from impact, accounting for wave attenuation"
                           label="Effective Magnitude"
                           value={impactAnalysis.seismic.effectiveMagnitude.toFixed(
                             1,
                           )}
                         />
                         <DataPoint
+                          tooltip="Modified Mercalli Intensity scale (I-XII) measuring observed effects - higher numbers indicate more severe shaking and damage to structures"
                           label="Mercalli Intensity"
                           value={impactAnalysis.seismic.mercalliIntensity}
                           variant="destructive"
                         />
                         <DataPoint
+                          tooltip="Time taken for the seismic waves to reach your specified distance from the impact point"
                           label="Arrival Time"
                           value={`${impactAnalysis.seismic.arrivalTime.toFixed(1)} s`}
                         />
@@ -796,17 +842,20 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
                     <CardContent>
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                         <DataPoint
+                          tooltip="Maximum pressure above normal atmospheric pressure caused by the blast wave - primary cause of structural damage"
                           label="Peak Overpressure"
                           value={`${impactAnalysis.airBlast.overpressureBars.toFixed(3)} bars`}
                           subtext={`${impactAnalysis.airBlast.overpressure.toFixed(0)} Pa`}
                           variant="destructive"
                         />
                         <DataPoint
+                          tooltip="Maximum wind velocity generated by the blast wave - can cause additional damage by moving debris and people"
                           label="Max Wind Speed"
                           value={`${impactAnalysis.airBlast.windSpeed.toFixed(0)} m/s`}
                           variant="warning"
                         />
                         <DataPoint
+                          tooltip="Time taken for the blast wave to reach your specified distance from the impact point"
                           label="Arrival Time"
                           value={`${impactAnalysis.airBlast.arrivalTime.toFixed(0)} s`}
                         />

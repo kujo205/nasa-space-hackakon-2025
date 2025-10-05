@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronRight,
   X,
+  Database,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAsteroid } from "@/components/AsteroidContext";
@@ -106,7 +107,10 @@ export function Sidebar() {
       </div>
 
       <div className="bg-background max-h-[80vh] overflow-y-auto border rounded-lg shadow-lg">
-        <CollapsibleSection title="Asteroid Data">
+        <CollapsibleSection
+          icon={<Database className="w-4 h-4" />}
+          title="Asteroid Data"
+        >
           <div className="space-y-2 text-sm">
             <div className="space-y-1">
               <AsteroidEarthMap data={neoObject} />
