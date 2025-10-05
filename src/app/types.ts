@@ -103,6 +103,8 @@ export interface NeoFeedResponse {
   };
 }
 
+type TFinalDataItem = NeoObject & { nasa_jpl_data: SBDBResponse };
+
 export interface NeoFeedResponseEnhanced {
   links: {
     self: string;
@@ -111,9 +113,9 @@ export interface NeoFeedResponseEnhanced {
   };
   element_count: number;
 
-  final_data: (NeoObject & { nasa_jpl_data: SBDBResponse })[];
+  final_data: TFinalDataItem[];
   near_earth_objects: {
-    [date: string]: (NeoObject & { nasa_jpl_data: SBDBResponse })[];
+    [date: string]: TFinalDataItem[];
   };
 }
 

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useAsteroid } from "@/components/AsteroidContext";
 import AsteroidImpactCalculator from "@/components/AsteroidImpactCalculator";
 import MitigationStrategy from "@/components/MitigationStrategy";
+import { AsteroidEarthMap } from "@/components/AsteroidEarthMap";
 
 interface MitigationStrategy {
   name: string;
@@ -114,7 +115,7 @@ export function Sidebar({
       neoObject?.close_approach_data[0]?.miss_distance.kilometers,
     ).toFixed(2),
     hazardous: neoObject?.is_potentially_hazardous_asteroid,
-    name: neoObject.name,
+    name: neoObject?.name,
   };
 
   return (
@@ -129,6 +130,7 @@ export function Sidebar({
         <CollapsibleSection title="Asteroid Data">
           <div className="space-y-2 text-sm">
             <div className="space-y-1">
+              <AsteroidEarthMap data={neoObject} />
               <p>
                 <span className="font-bold">Asteroid Name:</span>{" "}
                 {asteroidData.name}
