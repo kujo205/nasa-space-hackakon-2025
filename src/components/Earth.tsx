@@ -8,7 +8,6 @@ import Starfield from "./earth-components/Starfield";
 import EarthMaterial from "./earth-components/EarthMaterial";
 import AtmosphereMesh from "./earth-components/AtmosphereMesh";
 import Asteroids from "@/components/earth-components/Asteroids";
-import { items } from "@/components/exampleApiReturn";
 import { useAsteroid } from "@/components/AsteroidContext";
 import { BasicLoadingOverlay } from "@/components/earth-components/Spinner";
 
