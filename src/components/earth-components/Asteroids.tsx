@@ -1,55 +1,71 @@
 import * as THREE from "three";
 import React, { useRef, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Line, Cone } from "@react-three/drei";
+import { Line } from "@react-three/drei";
 import { SBDBResponse } from "../../app/types";
 import { useAsteroid } from "@/components/AsteroidContext";
 
-/**
- * Parse NASA SBDB orbital elements and create Keplerian orbit
- * @param {Object} asteroidData - NASA SBDB API data
- * @returns {Object} Parsed orbital parameters
- */
-function parseOrbitalElements(asteroidData) {
-  const elements = {};
+// Define interfaces for better type safety
+interface OrbitalElements {
+  a: number; // semi-major axis
+  e: number; // eccentricity
+  i: number; // inclination
+  om: number; // longitude of ascending node
+  w: number; // argument of perihelion
+  ma: number; // mean anomaly
+  n: number; // mean motion
+  period: number; // orbital period
+}
+
+interface ProcessedAsteroid extends OrbitalElements {
+  name: string;
+  color: THREE.Color;
+  orbitPath: THREE.Vector3[];
+  markedAnomaly: number;
+  neo_reference_id?: string;
+  epoch?: number;
+}
+
+function parseOrbitalElements(
+  asteroidData: SBDBResponse,
+): OrbitalElements & { name: string; epoch: number } {
+  const elements = {} as OrbitalElements;
 
   asteroidData.orbit.elements.forEach((elem) => {
     switch (elem.name) {
-      case "a": // semi-major axis (AU)
+      case "a":
         elements.a = parseFloat(elem.value);
         break;
-      case "e": // eccentricity
+      case "e":
         elements.e = parseFloat(elem.value);
         break;
-      case "i": // inclination (degrees)
+      case "i":
         elements.i = (parseFloat(elem.value) * Math.PI) / 180;
         break;
-      case "om": // longitude of ascending node (degrees)
+      case "om":
         elements.om = (parseFloat(elem.value) * Math.PI) / 180;
         break;
-      case "w": // argument of perihelion (degrees)
+      case "w":
         elements.w = (parseFloat(elem.value) * Math.PI) / 180;
         break;
-      case "ma": // mean anomaly (degrees)
+      case "ma":
         elements.ma = (parseFloat(elem.value) * Math.PI) / 180;
         break;
-      case "n": // mean motion (deg/day)
+      case "n":
         elements.n = (parseFloat(elem.value) * Math.PI) / 180;
         break;
-      case "per": // orbital period (days)
+      case "per":
         elements.period = parseFloat(elem.value);
         break;
     }
   });
 
-  // If period not provided, calculate from semi-major axis (Kepler's 3rd law)
   if (!elements.period && elements.a) {
-    elements.period = 365.25 * Math.pow(elements.a, 1.5); // Period in days
+    elements.period = 365.25 * Math.pow(elements.a, 1.5);
   }
 
-  // If mean motion not provided, calculate from period
   if (!elements.n && elements.period) {
-    elements.n = (2 * Math.PI) / elements.period; // radians per day
+    elements.n = (2 * Math.PI) / elements.period;
   }
 
   return {
@@ -59,46 +75,31 @@ function parseOrbitalElements(asteroidData) {
   };
 }
 
-/**
- * Solve Kepler's equation: E - e*sin(E) = M
- * Uses Newton-Raphson iteration for accuracy
- * @param {number} M - Mean anomaly (radians)
- * @param {number} e - Eccentricity
- * @returns {number} Eccentric anomaly (radians)
- */
-function solveKeplerEquation(M, e) {
-  // Normalize M to [0, 2π]
+function solveKeplerEquation(M: number, e: number): number {
   M = M % (2 * Math.PI);
   if (M < 0) M += 2 * Math.PI;
 
-  // Initial guess
   let E = M + e * Math.sin(M);
 
-  // Newton-Raphson iteration
   for (let i = 0; i < 10; i++) {
     const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
     E -= dE;
 
-    // Check convergence
     if (Math.abs(dE) < 1e-8) break;
   }
 
   return E;
 }
 
-/**
- * Calculate position and velocity on Keplerian orbit
- * @param {Object} elements - Orbital elements
- * @param {number} meanAnomaly - Current mean anomaly
- * @returns {Object} {position: THREE.Vector3, trueAnomaly: number, radius: number}
- */
-function calculateOrbitalPosition(elements, meanAnomaly, orbitScale) {
+function calculateOrbitalPosition(
+  elements: OrbitalElements,
+  meanAnomaly: number,
+  orbitScale: number = 10,
+) {
   const { a, e, i, om, w } = elements;
 
-  // Solve Kepler's equation for eccentric anomaly
   const E = solveKeplerEquation(meanAnomaly, e);
 
-  // True anomaly - actual angle from perihelion
   const nu =
     2 *
     Math.atan2(
@@ -106,14 +107,11 @@ function calculateOrbitalPosition(elements, meanAnomaly, orbitScale) {
       Math.sqrt(1 - e) * Math.cos(E / 2),
     );
 
-  // Orbital radius (distance from Sun)
   const r = a * (1 - e * Math.cos(E));
 
-  // Position in orbital plane
   const xOrb = r * Math.cos(nu);
   const yOrb = r * Math.sin(nu);
 
-  // Rotation matrices to transform from orbital plane to ecliptic coordinates
   const cosW = Math.cos(w);
   const sinW = Math.sin(w);
   const cosOm = Math.cos(om);
@@ -121,7 +119,6 @@ function calculateOrbitalPosition(elements, meanAnomaly, orbitScale) {
   const cosI = Math.cos(i);
   const sinI = Math.sin(i);
 
-  // Apply rotations: w (argument of perihelion), i (inclination), om (longitude of node)
   const x =
     (cosW * cosOm - sinW * sinOm * cosI) * xOrb +
     (-sinW * cosOm - cosW * sinOm * cosI) * yOrb;
@@ -138,13 +135,11 @@ function calculateOrbitalPosition(elements, meanAnomaly, orbitScale) {
   };
 }
 
-/**
- * Generate orbital path points
- * @param {Object} elements - Orbital elements
- * @param {number} numPoints - Number of points to generate
- * @returns {Array<THREE.Vector3>} Array of position vectors
- */
-function generateOrbitPath(elements, numPoints = 200, orbitScale: number) {
+function generateOrbitPath(
+  elements: OrbitalElements,
+  numPoints: number = 200,
+  orbitScale: number = 10,
+): THREE.Vector3[] {
   const points = [];
   for (let i = 0; i <= numPoints; i++) {
     const meanAnomaly = (i / numPoints) * Math.PI * 2;
@@ -158,41 +153,37 @@ function generateOrbitPath(elements, numPoints = 200, orbitScale: number) {
   return points;
 }
 
-/**
- * Get color based on asteroid type or orbital characteristics
- */
-function getAsteroidColor(elements) {
-  const { a, e } = elements;
+function getAsteroidColor(elements: OrbitalElements): THREE.Color {
+  const { a } = elements;
 
-  // Color based on semi-major axis (distance from sun)
   if (a < 1) {
-    return new THREE.Color(0xff6b6b); // Red for inner asteroids (Atens/Apollos)
+    return new THREE.Color(0xff6b6b);
   } else if (a < 1.5) {
-    return new THREE.Color(0xffa500); // Orange
+    return new THREE.Color(0xffa500);
   } else if (a < 2.5) {
-    return new THREE.Color(0xffeb3b); // Yellow (main belt)
+    return new THREE.Color(0xffeb3b);
   } else {
-    return new THREE.Color(0x4ecdc4); // Cyan for outer asteroids
+    return new THREE.Color(0x4ecdc4);
   }
 }
 
 interface AsteroidProps {
   asteroidsData: SBDBResponse[];
-  timeScale: number;
-  onAsteroidClick: (nao_reference_id: string) => void;
-  orbitScale: number;
+  timeScale?: number;
+  onAsteroidClick: (neo_reference_id: string) => void;
+  orbitScale?: number;
 }
 
 export default function Asteroids({
   asteroidsData = [],
-  timeScale = 2,
+  timeScale = 0.0001, // Very small value for minimal movement
   onAsteroidClick,
   orbitScale = 10,
 }: AsteroidProps) {
   const { selectedNaoReferenceId, isSidebarOpen } = useAsteroid();
-  const markerMeshRef = useRef();
+  const markerMeshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const [hoveredAsteroid, setHoveredAsteroid] = useState(null);
+  const [hoveredAsteroid, setHoveredAsteroid] = useState<number | null>(null);
 
   // Parse all asteroid data
   const asteroids = useMemo(() => {
@@ -209,55 +200,66 @@ export default function Asteroids({
           n: (0.5 * Math.PI) / 180,
           period: 670,
           color: new THREE.Color(0xffeb3b),
-          orbitPath: generateOrbitPath({
-            a: 1.5,
-            e: 0.2,
-            i: 0.2,
-            om: 0.5,
-            w: 1.0,
-          }),
+          orbitPath: generateOrbitPath(
+            {
+              a: 1.5,
+              e: 0.2,
+              i: 0.2,
+              om: 0.5,
+              w: 1.0,
+              ma: 0,
+              n: (0.5 * Math.PI) / 180,
+              period: 670,
+            },
+            200,
+            orbitScale,
+          ),
           markedAnomaly: 0,
         },
-      ];
+      ] as ProcessedAsteroid[];
     }
+
     return asteroidsData.map((data) => {
       const elements = parseOrbitalElements(data);
       return {
         ...elements,
         color: getAsteroidColor(elements),
-        orbitPath: generateOrbitPath(elements, 200, orbitScale), // Pass orbitScale here
+        orbitPath: generateOrbitPath(elements, 200, orbitScale),
         markedAnomaly: 0,
         neo_reference_id: data.neo_reference_id,
-      };
+      } as ProcessedAsteroid;
     });
   }, [asteroidsData, orbitScale]);
 
-  // Track current time for asteroid positions
   const [currentTime, setCurrentTime] = useState(0);
 
-  // Animate markers and update time
+  // Update markers positions
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
     setCurrentTime(time);
 
-    asteroids.forEach((asteroid, i) => {
-      const markerData = calculateOrbitalPosition(
-        asteroid,
-        asteroid.markedAnomaly,
-        orbitScale,
-      );
-      dummy.position.copy(markerData.position);
-      dummy.scale.set(1.5, 1.5, 1.5);
-      dummy.rotation.y = time * 0.5;
-      dummy.updateMatrix();
-      markerMeshRef.current.setMatrixAt(i, dummy.matrix);
-    });
-    markerMeshRef.current.instanceMatrix.needsUpdate = true;
+    if (markerMeshRef.current) {
+      asteroids.forEach((asteroid, i) => {
+        const markerData = calculateOrbitalPosition(
+          asteroid,
+          asteroid.markedAnomaly,
+          orbitScale,
+        );
+
+        dummy.position.copy(markerData.position);
+        dummy.scale.set(1.5, 1.5, 1.5);
+        dummy.rotation.y = time * 0.5; // Keep rotation for visual effect
+        dummy.updateMatrix();
+        markerMeshRef.current.setMatrixAt(i, dummy.matrix);
+      });
+
+      markerMeshRef.current.instanceMatrix.needsUpdate = true;
+    }
   });
 
   const handleAsteroidClick = (index: number) => {
-    if (onAsteroidClick) {
-      onAsteroidClick(asteroids[index].neo_reference_id);
+    if (onAsteroidClick && asteroids[index]?.neo_reference_id) {
+      onAsteroidClick(asteroids[index].neo_reference_id!);
     }
   };
 
@@ -296,13 +298,12 @@ export default function Asteroids({
           />
         );
       })}
-      {/* Asteroids - with individual meshes for hover detection */}
+
+      {/* Asteroids - at fixed positions matching markers */}
       {asteroids.map((asteroid, i) => {
-        const elapsedDays = currentTime * timeScale;
-        const currentMeanAnomaly = asteroid.ma + asteroid.n * elapsedDays;
         const { position, radius } = calculateOrbitalPosition(
           asteroid,
-          currentMeanAnomaly,
+          asteroid.markedAnomaly, // Fixed position
           orbitScale,
         );
         const isHovered = hoveredAsteroid === i;
@@ -313,7 +314,7 @@ export default function Asteroids({
             key={`asteroid-${i}`}
             position={position}
             scale={[scale, scale, scale]}
-            rotation={[currentTime * 0.01, currentTime * 0.02, 0]}
+            rotation={[currentTime * 0.01, currentTime * 0.02, 0]} // Subtle rotation
             onPointerOver={(e) => {
               e.stopPropagation();
               setHoveredAsteroid(i);
@@ -339,41 +340,12 @@ export default function Asteroids({
           </mesh>
         );
       })}
-      {/* Markers */}
+
+      {/* Markers - ADDED THIS MISSING SECTION */}
       <instancedMesh ref={markerMeshRef} args={[null, null, asteroids.length]}>
         <sphereGeometry args={[0.06, 16, 16]} />
         <meshBasicMaterial color={"#4da4a4"} transparent opacity={0.8} />
       </instancedMesh>
-      {/* Rings */}
-      {asteroids.map((asteroid, i) => {
-        const markerData = calculateOrbitalPosition(
-          asteroid,
-          asteroid.markedAnomaly,
-        );
-        const isHovered = hoveredAsteroid === i;
-        return (
-          <mesh
-            key={`marker-ring-${i}`}
-            position={markerData.position}
-            scale={[1, 1, 1]}
-            onPointerOver={(e) => {
-              e.stopPropagation();
-              setHoveredAsteroid(i);
-              document.body.style.cursor = "pointer";
-            }}
-            onPointerOut={() => {
-              setHoveredAsteroid(null);
-              document.body.style.cursor = "auto";
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAsteroidClick(i);
-            }}
-          >
-            <meshStandardMaterial color={isHovered ? asteroid.color : "red"} />
-          </mesh>
-        );
-      })}
     </>
   );
 }
