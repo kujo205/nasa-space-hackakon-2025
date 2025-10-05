@@ -22,7 +22,7 @@ function Earth() {
   const axialTilt = (23.4 * Math.PI) / 180;
   return (
     <group rotation-z={axialTilt}>
-      <mesh scale={[0.8, 0.8, 0.8]} ref={ref}>
+      <mesh scale={[0.6, 0.6, 0.6]} ref={ref}>
         <icosahedronGeometry args={[2, 64]} />
         <EarthMaterial sunDirection={sunDirection} />
         <AtmosphereMesh />
