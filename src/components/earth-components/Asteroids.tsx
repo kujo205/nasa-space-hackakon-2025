@@ -326,7 +326,7 @@ export default function Asteroids({
       {/* Markers */}
       <instancedMesh ref={markerMeshRef} args={[null, null, asteroids.length]}>
         <sphereGeometry args={[0.08, 16, 16]} />
-        <meshBasicMaterial color={0xffffff} transparent opacity={0.8} />
+        <meshBasicMaterial color={"#4da4a4"} transparent opacity={0.8} />
       </instancedMesh>
       {/* Rings */}
       {asteroids.map((asteroid, i) => {
@@ -354,13 +354,7 @@ export default function Asteroids({
               handleAsteroidClick(i);
             }}
           >
-            <ringGeometry args={[0.15, 0.2, 32]} />
-            <meshBasicMaterial
-              color={isHovered ? "cyan" : asteroid.color}
-              side={THREE.DoubleSide}
-              transparent
-              opacity={isHovered ? 0.9 : 0.6}
-            />
+            <meshStandardMaterial color={isHovered ? asteroid.color : "red"} />
           </mesh>
         );
       })}
