@@ -23,7 +23,7 @@ const atricles = [
     description:
       "SkyGuard is an interactive platform that brings space science to life by visualizing real asteroid impact scenarios using NASA data. Users can explore how asteroids travel through space, simulate what would happen if it one struck Earth, and see the potential effects — crater formation, seismic effects, and atmospheric changes.\n\n" +
       "The tool lets users adjust variables such as asteroid density, impact angle, and distance from impact center, then instantly see how those changes alter outcomes. By combining scientific accuracy with intuitive design, dynamic visuals, and explanatory tooltips, the platform turns complex impact modeling into an accessible experience. It empowers the public, educators, and decision-makers to better understand asteroid threats and explore possible ways to protect our planet.",
-    video: false,
+    video: true,
   },
   {
     title: "About Us",
@@ -45,15 +45,15 @@ export default function Page() {
 
           {article.video && (
             <iframe
-              className="m-auto mt-10 max-w-[90%]"
+              className="m-auto py-6"
               width="560"
               height="315"
-              src="https://www.youtube.com/embed/wOuVQGZmZa8?si=rF3UT4WLp4xmT00v"
+              src="https://www.youtube.com/embed/Wqb8iltkvVY?si=L0trQB_C_uB5YPz4"
               title="YouTube video player"
-              frameBorder="0"
+              frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
             ></iframe>
           )}
         </article>
