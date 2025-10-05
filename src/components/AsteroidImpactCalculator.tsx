@@ -475,8 +475,15 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
                 Scientific Impact Calculator
               </CardTitle>
               <CardDescription>
-                Based on Collins et al. (2005) Earth Impact Effects Program
-                equations
+                Based on Earth Impact Effects Program equations{" "}
+                <a
+                  target="_blank"
+                  href="https://impact.ese.ic.ac.uk/ImpactEarth/ImpactEffects/effects.pdf"
+                >
+                  <Button className="!px-1 !py-1" variant="link">
+                    (link to the paper)
+                  </Button>
+                </a>
               </CardDescription>
             </div>
           </div>
@@ -838,7 +845,17 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
 
               <Alert>
                 <Info className="h-4 w-4" />
-                <AlertTitle>Based on Collins et al. (2005)</AlertTitle>
+                <AlertTitle>
+                  Based on Earth Impact Effects Program equations
+                  <a
+                    target="_blank"
+                    href="https://impact.ese.ic.ac.uk/ImpactEarth/ImpactEffects/effects.pdf"
+                  >
+                    <Button className="!px-1 !py-1" variant="link">
+                      (link to the paper)
+                    </Button>
+                  </a>
+                </AlertTitle>
                 <AlertDescription>
                   All calculations use published equations from the Earth Impact
                   Effects Program. Equations marked with * in the paper are
