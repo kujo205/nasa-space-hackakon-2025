@@ -3,6 +3,7 @@ import React, { useRef, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line, Cone } from "@react-three/drei";
 import { SBDBResponse } from "../../app/types";
+import { useAsteroid } from "@/components/AsteroidContext";
 
 /**
  * Parse NASA SBDB orbital elements and create Keplerian orbit
@@ -185,6 +186,7 @@ export default function Asteroids({
   timeScale = 2,
   onAsteroidClick,
 }: AsteroidProps) {
+  const { selectedNaoReferenceId, isSidebarOpen } = useAsteroid();
   const markerMeshRef = useRef();
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const [hoveredAsteroid, setHoveredAsteroid] = useState(null);
@@ -222,7 +224,7 @@ export default function Asteroids({
         color: getAsteroidColor(elements),
         orbitPath: generateOrbitPath(elements),
         markedAnomaly: 0,
-        nao_reference_id: data.neo_reference_id,
+        neo_reference_id: data.neo_reference_id,
       };
     });
   }, [asteroidsData]);
@@ -251,38 +253,45 @@ export default function Asteroids({
 
   const handleAsteroidClick = (index: number) => {
     if (onAsteroidClick) {
-      onAsteroidClick(asteroids[index].nao_reference_id);
+      onAsteroidClick(asteroids[index].neo_reference_id);
     }
   };
 
   return (
     <>
       {/* Orbital paths */}
-      {asteroids.map((asteroid, i) => (
-        <Line
-          depthWrite={false}
-          key={`orbit-${i}`}
-          points={asteroid.orbitPath}
-          color={hoveredAsteroid === i ? "yellow" : asteroid.color}
-          lineWidth={hoveredAsteroid === i ? 2.5 : 1.5}
-          transparent
-          depthTest={true}
-          opacity={hoveredAsteroid === i ? 0.9 : 0.6}
-          onPointerOver={(e) => {
-            e.stopPropagation();
-            setHoveredAsteroid(i);
-            document.body.style.cursor = "pointer";
-          }}
-          onPointerOut={() => {
-            setHoveredAsteroid(null);
-            document.body.style.cursor = "auto";
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleAsteroidClick(i);
-          }}
-        />
-      ))}
+      {asteroids.map((asteroid, i) => {
+        const makeLineHovered =
+          hoveredAsteroid === i ||
+          (asteroid.neo_reference_id === selectedNaoReferenceId &&
+            isSidebarOpen);
+
+        return (
+          <Line
+            depthWrite={false}
+            key={`orbit-${i}`}
+            points={asteroid.orbitPath}
+            color={makeLineHovered ? "yellow" : asteroid.color}
+            lineWidth={makeLineHovered ? 2.5 : 1.5}
+            transparent
+            depthTest={true}
+            opacity={makeLineHovered ? 0.9 : 0.6}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              setHoveredAsteroid(i);
+              document.body.style.cursor = "pointer";
+            }}
+            onPointerOut={() => {
+              setHoveredAsteroid(null);
+              document.body.style.cursor = "auto";
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAsteroidClick(i);
+            }}
+          />
+        );
+      })}
       {/* Asteroids - with individual meshes for hover detection */}
       {asteroids.map((asteroid, i) => {
         const elapsedDays = currentTime * timeScale;
