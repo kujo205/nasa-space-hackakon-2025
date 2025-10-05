@@ -6,11 +6,11 @@ const members = [
   {
     name: "Ivan Kuts",
     photo: "/ivan.jpg",
-    role: "Team Lead, Full-stack",
+    role: "Team Lead, Full-stack, Back-end, Front-end",
     linked: "https://www.linkedin.com/in/ivan-kuts-a52114199/",
   },
   {
-    name: "Kryvokhata Maria",
+    name: "Kryvokhata Mariia",
     photo: "/maria.jpg",
     role: "Designer, Product manager, Data analyst",
     linked: "https://www.linkedin.com/in/mariia-kryvokhata/",
@@ -22,10 +22,13 @@ const atricles = [
     title: "What does our app do?",
     description:
       "SkyGuard is an interactive platform that brings space science to life by visualizing real asteroid impact scenarios using NASA data. Users can explore how asteroids travel through space, simulate what would happen if it one struck Earth, and see the potential effects — crater formation, seismic effects, and atmospheric changes.\n\n" +
-      "The tool lets users adjust variables such as asteroid density, impact angle, and distance from impact center, then instantly see how those changes alter outcomes. By combining scientific accuracy with intuitive design, dynamic visuals, and explanatory tooltips, the platform turns complex impact modeling into an accessible experience. It empowers the public, educators, and decision-makers to better understand asteroid threats and explore possible ways to protect our planet.",
+      "The tool lets users adjust variables such as asteroid density, impact angle, and distance from impact center, then instantly see how those changes alter outcomes. By combining scientific accuracy with intuitive design, dynamic visuals, and explanatory tooltips, the platform turns complex impact modeling into an accessible experience. It empowers the public, educators, and decision-makers to better understand asteroid threats and explore possible ways to protect our planet.\n" +
+      '<a target="_blank" class="text-purple-700 underline" href="https://github.com/kujo205/nasa-space-hackakon-2025">Project github link<a/>' +
+      '<a target="_blank" class="text-purple-700 underline ml-4" href="https://www.spaceappschallenge.org/2025/find-a-team/spacecrammers1/">Nasa Space Apps Challange link<a/>',
     video: true,
   },
   {
+    mutualPhoto: true,
     title: "About Us",
     description:
       "We are a team of ambitious Ukrainian software engineers and product\n        analysts dedicated to our careers and studying at the KPI University. We\n        view studying as a main objective of our lives and so, dedicate a hefty\n        amount of time to this very purpose. We are also very keen on the topic\n        of space, which is why this contest drew our attention. Additionally, we\n        believe it's important to expand the boundaries of our knowledge, so we\n        decided to utilize our skills to make the lives of Space explorers\n        easier.",
@@ -41,13 +44,25 @@ export default function Page() {
           <h2 className="font-bold text-3xl max-md:text-2xl mt-10">
             {article.title}
           </h2>
-          <p className="mt-2 max-md:text-sm text-lg">{article.description}</p>
+
+          <p
+            dangerouslySetInnerHTML={{
+              __html: article.description.replace(/\n/g, "<br />"),
+            }}
+            className="mt-2 max-md:text-sm text-lg"
+          ></p>
+
+          {article.mutualPhoto && (
+            <img
+              className="w-56 m-auto my-4"
+              src="/ivan_maria.jpg"
+              alt="team"
+            />
+          )}
 
           {article.video && (
             <iframe
-              className="m-auto py-6"
-              width="560"
-              height="315"
+              className="w-full max-w-96 aspect-video m-auto py-6"
               src="https://www.youtube.com/embed/Wqb8iltkvVY?si=L0trQB_C_uB5YPz4"
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
