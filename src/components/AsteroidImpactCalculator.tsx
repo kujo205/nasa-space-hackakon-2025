@@ -570,10 +570,6 @@ const AsteroidImpactCalculator = ({ data }: AsteroidCalculatorProps) => {
                 </AlertTitle>
                 <AlertDescription className="mt-2">
                   <p className="text-base">{impactAnalysis.description}</p>
-                  <p className="text-sm mt-2">
-                    Average recurrence:{" "}
-                    {impactAnalysis.recurrenceInterval.toExponential(2)} years
-                  </p>
                 </AlertDescription>
               </Alert>
 
