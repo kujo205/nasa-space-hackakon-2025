@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { useFrame, extend, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { BlendFunction, KernelSize } from "postprocessing";
 
 export default function Sun() {
   const sunRef = useRef();
@@ -19,16 +20,29 @@ export default function Sun() {
       <mesh ref={sunRef} position={[0, 0, 0]}>
         <icosahedronGeometry args={[1, 15]} />
         <meshBasicMaterial color="#FDB813" />
-        <pointLight intensity={20} distance={100} decay={14} />
+        <pointLight intensity={20} distance={100} decay={2} />
       </mesh>
 
-      {/* Post-processing effects */}
+      {/* Corona effect */}
+      <mesh position={[0, 0, 0]} layers={1}>
+        <sphereGeometry args={[1.2, 32, 32]} />
+        <meshBasicMaterial
+          color="#FF5F1F"
+          transparent={true}
+          opacity={0.4}
+          side={THREE.BackSide}
+        />
+      </mesh>
+
+      {/* Match reference code bloom parameters exactly */}
       <EffectComposer>
         <Bloom
-          luminanceThreshold={0}
-          luminanceSmoothing={0.9}
-          intensity={6}
-          radius={0.1}
+          kernelSize={KernelSize.LARGE}
+          luminanceThreshold={0} // match reference
+          luminanceSmoothing={0.4}
+          intensity={2} // match reference
+          radius={0.85} // match reference
+          blendFunction={BlendFunction.SCREEN}
         />
       </EffectComposer>
     </>

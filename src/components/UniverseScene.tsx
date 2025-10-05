@@ -1,7 +1,8 @@
 "use client";
 import * as THREE from "three";
 import React from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
+
 import { OrbitControls } from "@react-three/drei";
 import Nebula from "./earth-components/Nebula";
 import Starfield from "./earth-components/Starfield";
