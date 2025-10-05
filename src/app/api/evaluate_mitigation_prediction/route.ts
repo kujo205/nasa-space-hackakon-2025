@@ -117,7 +117,6 @@ async function evaluateMitigationPrediction(
     output: "object",
     schema: zodReportSchema,
     maxRetries: 3,
-    temperature: 0.2,
     prompt: getPrompt(method, asteroidData),
   });
 
