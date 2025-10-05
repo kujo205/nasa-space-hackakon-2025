@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, forwardRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
 import * as THREE from "three";
@@ -6,13 +6,15 @@ import EarthMaterial from "./EarthMaterial";
 import AtmosphereMesh from "./AtmosphereMesh";
 import { useAsteroid } from "@/components/AsteroidContext";
 
-export function Earth({ orbitScale = 10, orbitSpeed = 0.001 }) {
+export const Earth = forwardRef(function Earth(
+  { orbitScale = 10, orbitSpeed = 0.001 },
+  ref,
+) {
   const { selectedDate } = useAsteroid();
 
   const date = new Date(selectedDate);
 
   const earthRef = useRef();
-  const orbitRef = useRef();
 
   // Calculate Earth's position based on date - fixed TypeScript errors
   const earthPosition = useMemo(() => {
@@ -74,19 +76,14 @@ export function Earth({ orbitScale = 10, orbitSpeed = 0.001 }) {
         opacity={0.5}
       />
 
-      {/* Earth group at orbital position - fixed rotation syntax */}
-      <group
-        position={earthPosition}
-        rotation={[0, 0, axialTilt]}
-        ref={orbitRef}
-      >
+      {/* Earth group at orbital position - now with forwarded ref */}
+      <group position={earthPosition} rotation={[0, 0, axialTilt]} ref={ref}>
         <mesh scale={[0.15, 0.15, 0.15]} ref={earthRef}>
           <icosahedronGeometry args={[2, 64]} />
           <EarthMaterial sunDirection={adjustedSunDirection} />
-          {/* Added default props for AtmosphereMesh */}
           <AtmosphereMesh rimHex={0x0088ff} facingHex={0x000000} />
         </mesh>
       </group>
     </>
   );
-}
+});
