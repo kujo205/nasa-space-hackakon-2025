@@ -8,6 +8,27 @@ const requestSchema = z.object({
   asteroidData: z.object({}).passthrough(),
 });
 
+const zodReportSchema = z.object({
+  delflectionEffectiveness: z
+    .string()
+    .describe("is user preferred deflection method effection"),
+  costEffectiveness: z
+    .string()
+    .describe("is user preferred deflection method cost effective"),
+  conclusion: z
+    .string()
+    .describe(
+      "[state if it’s suitable or not; if not, list better alternatives from: Kinetic impactor, Gravity tractor, Laser ablation, Ion beam shepherd, Nuclear blast]. Give a brief explanation why listed alternatives are better in this particular task",
+    ),
+});
+
+export type MitigationRequest = z.infer<typeof requestSchema>;
+export type MitigationResponse = {
+  success: boolean;
+  data?: z.infer<typeof zodReportSchema>;
+  error?: string;
+};
+
 // API Route Handler
 export async function POST(req: NextRequest) {
   console.log("received request");
@@ -19,6 +40,7 @@ export async function POST(req: NextRequest) {
 
     // Validate input
     const validation = requestSchema.safeParse(body);
+
     if (!validation.success) {
       return NextResponse.json(
         {
@@ -81,20 +103,6 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-const zodReportSchema = z.object({
-  delflectionEffectiveness: z
-    .string()
-    .describe("is user preferred deflection method effection"),
-  costEffectiveness: z
-    .string()
-    .describe("is user preferred deflection method cost effective"),
-  conclusion: z
-    .string()
-    .describe(
-      "[state if it’s suitable or not; if not, list better alternatives from: Kinetic impactor, Gravity tractor, Laser ablation, Ion beam shepherd, Nuclear blast]. Give a brief explanation why listed alternatives are better in this particular task",
-    ),
-});
 
 async function evaluateMitigationPrediction(
   method: string,

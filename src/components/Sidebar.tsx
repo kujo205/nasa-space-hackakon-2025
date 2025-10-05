@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAsteroid } from "@/components/AsteroidContext";
 import AsteroidImpactCalculator from "@/components/AsteroidImpactCalculator";
+import MitigationStrategy from "@/components/MitigationStrategy";
 
 interface MitigationStrategy {
   name: string;
@@ -164,30 +165,13 @@ export function Sidebar({
         <CollapsibleSection title="Impact" icon={<Globe className="w-4 h-4" />}>
           <AsteroidImpactCalculator data={neoObject} />
         </CollapsibleSection>
+
         {/* Mitigation Section */}
         <CollapsibleSection
           title="Mitigation"
           icon={<Shield className="w-4 h-4" />}
         >
-          <div className="space-y-3 text-sm">
-            <div className="space-y-2">
-              {mitigationStrategies.map((strategy, index) => (
-                <div key={index} className="p-2 border rounded">
-                  <p className="font-medium">{strategy.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {strategy.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="pt-2 border-t">
-              <p className="text-xs font-medium">Recommended Strategy:</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {recommendedStrategy}
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground pt-2">{author}</p>
-          </div>
+          <MitigationStrategy neoObjectData={neoObject} />
         </CollapsibleSection>
       </div>
     </div>
